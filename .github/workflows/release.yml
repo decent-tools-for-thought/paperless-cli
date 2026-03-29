@@ -1,0 +1,26 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to publish. Defaults to v<project version>.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: decent-tools-for-thought/.github/.github/workflows/python-package-release.yml@main
+    with:
+      dependency_install_command: uv sync --group dev
+      mypy_target: src tests
+      package_import_name: paperless_cli
+      cli_command: paperless
+      artifact_name: paperless-cli-dist
+      release_tag: ${{ inputs.release_tag || '' }}

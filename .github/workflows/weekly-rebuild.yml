@@ -1,0 +1,14 @@
+name: Package Drift
+
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+jobs:
+  package-drift:
+    uses: decent-tools-for-thought/.github/.github/workflows/python-package-drift.yml@main
+    with:
+      package_import_name: paperless_cli
+      cli_command: paperless
+      run_tests: false
