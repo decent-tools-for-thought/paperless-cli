@@ -19,7 +19,9 @@ RESOURCES: dict[str, ResourceSpec] = {
     "tags": ResourceSpec("/api/tags/"),
     "saved-views": ResourceSpec("/api/saved_views/"),
     "storage-paths": ResourceSpec("/api/storage_paths/"),
-    "tasks": ResourceSpec("/api/tasks/", allow_create=False, allow_update=False, allow_delete=False),
+    "tasks": ResourceSpec(
+        "/api/tasks/", allow_create=False, allow_update=False, allow_delete=False
+    ),
     "users": ResourceSpec("/api/users/"),
     "groups": ResourceSpec("/api/groups/"),
     "mail-accounts": ResourceSpec("/api/mail_accounts/"),
@@ -31,7 +33,9 @@ RESOURCES: dict[str, ResourceSpec] = {
     "workflows": ResourceSpec("/api/workflows/"),
     "custom-fields": ResourceSpec("/api/custom_fields/"),
     "config": ResourceSpec("/api/config/", allow_create=False, allow_delete=False),
-    "processed-mail": ResourceSpec("/api/processed_mail/", allow_create=False, allow_update=False, allow_delete=False),
+    "processed-mail": ResourceSpec(
+        "/api/processed_mail/", allow_create=False, allow_update=False, allow_delete=False
+    ),
 }
 
 

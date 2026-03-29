@@ -8,13 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 from urllib.error import HTTPError
-from urllib.parse import urlencode
-from urllib.parse import urljoin
-from urllib.request import Request
-from urllib.request import urlopen
+from urllib.parse import urlencode, urljoin
+from urllib.request import Request, urlopen
 
 from paperless_cli.config import Profile
-
 
 JSON = dict[str, Any] | list[Any] | str | int | float | bool | None
 
@@ -74,10 +71,7 @@ def encode_multipart(
         lines.extend(
             [
                 f"--{boundary}".encode(),
-                (
-                    f'Content-Disposition: form-data; name="{key}"; '
-                    f'filename="{filename}"'
-                ).encode(),
+                (f'Content-Disposition: form-data; name="{key}"; filename="{filename}"').encode(),
                 f"Content-Type: {content_type}".encode(),
                 b"",
                 data,

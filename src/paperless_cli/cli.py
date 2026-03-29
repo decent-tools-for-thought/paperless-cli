@@ -1,10 +1,10 @@
 import argparse
 import sys
+
 from paperless_cli.client import ApiError
 from paperless_cli.commands import dispatch
 from paperless_cli.config import DEFAULT_API_VERSION
-from paperless_cli.spec import DOCUMENT_ACTIONS
-from paperless_cli.spec import RESOURCES
+from paperless_cli.spec import DOCUMENT_ACTIONS, RESOURCES
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -97,7 +97,9 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _add_documents_commands(subparsers: argparse._SubParsersAction[argparse.ArgumentParser]) -> None:
+def _add_documents_commands(
+    subparsers: argparse._SubParsersAction[argparse.ArgumentParser],
+) -> None:
     for action in DOCUMENT_ACTIONS:
         parser = subparsers.add_parser(action)
         if action == "next-asn":

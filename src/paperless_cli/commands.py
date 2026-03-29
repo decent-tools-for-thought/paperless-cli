@@ -6,21 +6,17 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from paperless_cli.client import ApiClient
-from paperless_cli.client import ApiError
-from paperless_cli.client import file_tuple
-from paperless_cli.client import parse_data_arg
-from paperless_cli.client import parse_key_value
-from paperless_cli.config import Profile
-from paperless_cli.config import config_path
-from paperless_cli.config import get_profile
-from paperless_cli.config import load_config
-from paperless_cli.config import remove_profile
-from paperless_cli.config import set_active_profile
-from paperless_cli.config import upsert_profile
-from paperless_cli.spec import DOCUMENT_ACTIONS
-from paperless_cli.spec import RESOURCES
-from paperless_cli.spec import SPECIAL_ENDPOINTS
+from paperless_cli.client import ApiClient, ApiError, file_tuple, parse_data_arg, parse_key_value
+from paperless_cli.config import (
+    Profile,
+    config_path,
+    get_profile,
+    load_config,
+    remove_profile,
+    set_active_profile,
+    upsert_profile,
+)
+from paperless_cli.spec import DOCUMENT_ACTIONS, RESOURCES, SPECIAL_ENDPOINTS
 
 
 def dispatch(args: Any) -> int:
@@ -30,29 +26,69 @@ def dispatch(args: Any) -> int:
     if args.command in RESOURCES:
         return handle_resource(client, args)
     if args.command == "search":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["search"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["search"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "search-autocomplete":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["search-autocomplete"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["search-autocomplete"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "statistics":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["statistics"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["statistics"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "bulk-edit-objects":
-        return emit(client.request("POST", SPECIAL_ENDPOINTS["bulk-edit-objects"], json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", SPECIAL_ENDPOINTS["bulk-edit-objects"], json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "remote-version":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["remote-version"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["remote-version"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "ui-settings":
         if args.ui_command == "get":
-            return emit(client.request("GET", SPECIAL_ENDPOINTS["ui-settings"], params=parse_key_value(args.query)).parsed)
-        return emit(client.request("POST", SPECIAL_ENDPOINTS["ui-settings"], json_data=parse_data_arg(args.data)).parsed)
+            return emit(
+                client.request(
+                    "GET", SPECIAL_ENDPOINTS["ui-settings"], params=parse_key_value(args.query)
+                ).parsed
+            )
+        return emit(
+            client.request(
+                "POST", SPECIAL_ENDPOINTS["ui-settings"], json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "profile":
         return handle_profile(client, args)
     if args.command == "totp":
         return handle_totp(client, args)
     if args.command == "status":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["status"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["status"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "trash":
         if args.trash_command == "list":
-            return emit(client.request("GET", SPECIAL_ENDPOINTS["trash"], params=parse_key_value(args.query)).parsed)
-        return emit(client.request("POST", SPECIAL_ENDPOINTS["trash"], json_data=parse_data_arg(args.data)).parsed)
+            return emit(
+                client.request(
+                    "GET", SPECIAL_ENDPOINTS["trash"], params=parse_key_value(args.query)
+                ).parsed
+            )
+        return emit(
+            client.request(
+                "POST", SPECIAL_ENDPOINTS["trash"], json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "schema":
         response = client.request(
             "GET",
@@ -61,7 +97,11 @@ def dispatch(args: Any) -> int:
         )
         return emit(response.parsed, output=args.output)
     if args.command == "oauth-callback":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["oauth-callback"], params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", SPECIAL_ENDPOINTS["oauth-callback"], params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "raw":
         response = client.request(
             args.method,
@@ -158,33 +198,69 @@ def handle_resource(client: ApiClient, args: Any) -> int:
             return emit(client.paginate(base_path, params=params))
         return emit(client.request("GET", base_path, params=params).parsed)
     if command == "get":
-        return emit(client.request("GET", f"{base_path}{args.id}/", params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", f"{base_path}{args.id}/", params=parse_key_value(args.query)
+            ).parsed
+        )
     if command == "create":
         return emit(client.request("POST", base_path, json_data=parse_data_arg(args.data)).parsed)
     if command == "update":
-        return emit(client.request("PUT", f"{base_path}{args.id}/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "PUT", f"{base_path}{args.id}/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if command == "patch":
-        return emit(client.request("PATCH", f"{base_path}{args.id}/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "PATCH", f"{base_path}{args.id}/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if command == "delete":
-        return emit(client.request("DELETE", f"{base_path}{args.id}/", params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "DELETE", f"{base_path}{args.id}/", params=parse_key_value(args.query)
+            ).parsed
+        )
     if args.command == "documents":
         return handle_documents(client, args)
     if args.command == "storage-paths" and command == "test":
-        return emit(client.request("POST", "/api/storage_paths/test/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", "/api/storage_paths/test/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "tasks" and command == "acknowledge":
-        return emit(client.request("POST", "/api/tasks/acknowledge/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", "/api/tasks/acknowledge/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "tasks" and command == "run":
-        return emit(client.request("POST", "/api/tasks/run/", json_data={"task_name": args.task_name}).parsed)
+        return emit(
+            client.request(
+                "POST", "/api/tasks/run/", json_data={"task_name": args.task_name}
+            ).parsed
+        )
     if args.command == "share-link-bundles" and command == "rebuild":
         return emit(client.request("POST", f"/api/share_link_bundles/{args.id}/rebuild/").parsed)
     if args.command == "users" and command == "deactivate-totp":
         return emit(client.request("POST", f"/api/users/{args.id}/deactivate_totp/").parsed)
     if args.command == "mail-accounts" and command == "test":
-        return emit(client.request("POST", "/api/mail_accounts/test/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", "/api/mail_accounts/test/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.command == "mail-accounts" and command == "process":
         return emit(client.request("POST", f"/api/mail_accounts/{args.id}/process/").parsed)
     if args.command == "processed-mail" and command == "bulk-delete":
-        return emit(client.request("POST", "/api/processed_mail/bulk_delete/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", "/api/processed_mail/bulk_delete/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     raise SystemExit(f"Unhandled resource command: {args.command} {command}")
 
 
@@ -218,36 +294,77 @@ def handle_documents(client: ApiClient, args: Any) -> int:
             response = client.request(method, path, json_data=parse_data_arg(args.data))
             return emit(response.parsed, output=args.output, raw_bytes=response.body)
         if command == "chat":
-            response = client.request(method, path, json_data=parse_data_arg(args.data), accept="application/json")
+            response = client.request(
+                method, path, json_data=parse_data_arg(args.data), accept="application/json"
+            )
             return emit(response.parsed, output=args.output, raw_bytes=response.body)
         return emit(client.request(method, path, json_data=parse_data_arg(args.data)).parsed)
     if command == "root":
-        return emit(client.request("GET", f"/api/documents/{args.id}/root/", params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", f"/api/documents/{args.id}/root/", params=parse_key_value(args.query)
+            ).parsed
+        )
     if command == "metadata":
-        return emit(client.request("GET", f"/api/documents/{args.id}/metadata/", params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", f"/api/documents/{args.id}/metadata/", params=parse_key_value(args.query)
+            ).parsed
+        )
     if command == "suggestions":
-        return emit(client.request("GET", f"/api/documents/{args.id}/suggestions/", params=parse_key_value(args.query)).parsed)
+        return emit(
+            client.request(
+                "GET", f"/api/documents/{args.id}/suggestions/", params=parse_key_value(args.query)
+            ).parsed
+        )
     if command == "preview":
-        response = client.request("GET", f"/api/documents/{args.id}/preview/", params=parse_key_value(args.query), accept="application/octet-stream")
+        response = client.request(
+            "GET",
+            f"/api/documents/{args.id}/preview/",
+            params=parse_key_value(args.query),
+            accept="application/octet-stream",
+        )
         return emit(response.parsed, output=args.output, raw_bytes=response.body)
     if command == "thumb":
-        response = client.request("GET", f"/api/documents/{args.id}/thumb/", params=parse_key_value(args.query), accept="image/webp")
+        response = client.request(
+            "GET",
+            f"/api/documents/{args.id}/thumb/",
+            params=parse_key_value(args.query),
+            accept="image/webp",
+        )
         return emit(response.parsed, output=args.output, raw_bytes=response.body)
     if command == "download":
-        response = client.request("GET", f"/api/documents/{args.id}/download/", params=parse_key_value(args.query), accept="application/octet-stream")
+        response = client.request(
+            "GET",
+            f"/api/documents/{args.id}/download/",
+            params=parse_key_value(args.query),
+            accept="application/octet-stream",
+        )
         return emit(response.parsed, output=args.output, raw_bytes=response.body)
     if command == "notes-list":
         return emit(client.request("GET", f"/api/documents/{args.id}/notes/").parsed)
     if command == "notes-create":
-        return emit(client.request("POST", f"/api/documents/{args.id}/notes/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", f"/api/documents/{args.id}/notes/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if command == "notes-delete":
-        return emit(client.request("DELETE", f"/api/documents/{args.id}/notes/", params={"id": args.note_id}).parsed)
+        return emit(
+            client.request(
+                "DELETE", f"/api/documents/{args.id}/notes/", params={"id": args.note_id}
+            ).parsed
+        )
     if command == "share-links":
         return emit(client.request("GET", f"/api/documents/{args.id}/share_links/").parsed)
     if command == "history":
         return emit(client.request("GET", f"/api/documents/{args.id}/history/").parsed)
     if command == "email-item":
-        return emit(client.request("POST", f"/api/documents/{args.id}/email/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", f"/api/documents/{args.id}/email/", json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if command == "update-version":
         return emit(
             client.request(
@@ -258,9 +375,17 @@ def handle_documents(client: ApiClient, args: Any) -> int:
             ).parsed
         )
     if command == "delete-version":
-        return emit(client.request("DELETE", f"/api/documents/{args.id}/versions/{args.version_id}/").parsed)
+        return emit(
+            client.request("DELETE", f"/api/documents/{args.id}/versions/{args.version_id}/").parsed
+        )
     if command == "update-version-label":
-        return emit(client.request("PATCH", f"/api/documents/{args.id}/versions/{args.version_id}/", json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "PATCH",
+                f"/api/documents/{args.id}/versions/{args.version_id}/",
+                json_data=parse_data_arg(args.data),
+            ).parsed
+        )
     raise SystemExit(f"Unhandled documents command: {command}")
 
 
@@ -268,13 +393,25 @@ def handle_profile(client: ApiClient, args: Any) -> int:
     if args.profile_command == "get":
         return emit(client.request("GET", SPECIAL_ENDPOINTS["profile"]).parsed)
     if args.profile_command == "patch":
-        return emit(client.request("PATCH", SPECIAL_ENDPOINTS["profile"], json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "PATCH", SPECIAL_ENDPOINTS["profile"], json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.profile_command == "generate-token":
         return emit(client.request("POST", SPECIAL_ENDPOINTS["profile-generate-token"]).parsed)
     if args.profile_command == "disconnect-social-account":
-        return emit(client.request("POST", SPECIAL_ENDPOINTS["profile-disconnect-social-account"], json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST",
+                SPECIAL_ENDPOINTS["profile-disconnect-social-account"],
+                json_data=parse_data_arg(args.data),
+            ).parsed
+        )
     if args.profile_command == "social-account-providers":
-        return emit(client.request("GET", SPECIAL_ENDPOINTS["profile-social-account-providers"]).parsed)
+        return emit(
+            client.request("GET", SPECIAL_ENDPOINTS["profile-social-account-providers"]).parsed
+        )
     raise SystemExit("Missing profile subcommand")
 
 
@@ -282,7 +419,11 @@ def handle_totp(client: ApiClient, args: Any) -> int:
     if args.totp_command == "get":
         return emit(client.request("GET", SPECIAL_ENDPOINTS["totp"]).parsed)
     if args.totp_command == "activate":
-        return emit(client.request("POST", SPECIAL_ENDPOINTS["totp"], json_data=parse_data_arg(args.data)).parsed)
+        return emit(
+            client.request(
+                "POST", SPECIAL_ENDPOINTS["totp"], json_data=parse_data_arg(args.data)
+            ).parsed
+        )
     if args.totp_command == "deactivate":
         return emit(client.request("DELETE", SPECIAL_ENDPOINTS["totp"]).parsed)
     raise SystemExit("Missing totp subcommand")
@@ -303,7 +444,9 @@ def emit(value: Any, *, output: str | None = None, raw_bytes: bytes | None = Non
         path = Path(output)
         if raw_bytes is not None and isinstance(value, (bytes, bytearray)):
             path.write_bytes(bytes(value))
-        elif raw_bytes is not None and not isinstance(value, (dict, list, str, int, float, bool, type(None))):
+        elif raw_bytes is not None and not isinstance(
+            value, (dict, list, str, int, float, bool, type(None))
+        ):
             path.write_bytes(raw_bytes)
         elif isinstance(value, (bytes, bytearray)):
             path.write_bytes(bytes(value))

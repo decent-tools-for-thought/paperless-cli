@@ -9,13 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
-from paperless_cli.client import encode_multipart
-from paperless_cli.client import parse_data_arg
-from paperless_cli.client import parse_key_value
-from paperless_cli.config import Profile
-from paperless_cli.config import config_path
-from paperless_cli.config import load_config
-from paperless_cli.config import upsert_profile
+from paperless_cli.client import encode_multipart, parse_data_arg, parse_key_value
+from paperless_cli.config import Profile, config_path, load_config, upsert_profile
 
 
 class CliHelpersTest(unittest.TestCase):

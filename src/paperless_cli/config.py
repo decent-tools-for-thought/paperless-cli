@@ -2,10 +2,8 @@ from __future__ import annotations
 
 import json
 import os
-from dataclasses import asdict
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
-
 
 APP_NAME = "paperless-cli"
 DEFAULT_API_VERSION = 9
@@ -48,8 +46,7 @@ def load_config() -> Config:
         return Config(active_profile=None, profiles={})
     data = json.loads(path.read_text())
     profiles = {
-        name: Profile(name=name, **payload)
-        for name, payload in data.get("profiles", {}).items()
+        name: Profile(name=name, **payload) for name, payload in data.get("profiles", {}).items()
     }
     return Config(
         active_profile=data.get("active_profile"),
@@ -61,11 +58,7 @@ def save_config(config: Config) -> None:
     path = config_path()
     path.parent.mkdir(parents=True, exist_ok=True)
     profiles = {
-        name: {
-            key: value
-            for key, value in asdict(profile).items()
-            if key != "name"
-        }
+        name: {key: value for key, value in asdict(profile).items() if key != "name"}
         for name, profile in config.profiles.items()
     }
     payload = {
@@ -92,9 +85,7 @@ def get_profile(
         )
     name = profile_name or config.active_profile
     if not name:
-        raise SystemExit(
-            "No active profile. Run `paperless auth login --url ... --username ...`."
-        )
+        raise SystemExit("No active profile. Run `paperless auth login --url ... --username ...`.")
     try:
         profile = config.profiles[name]
     except KeyError as exc:
